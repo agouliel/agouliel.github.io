@@ -64,20 +64,20 @@ TEMPLATES = [
 
 mkdir templates
 
-<!-- templates/_base.html -->
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>{% block title %}Our Site{% endblock title %}</title>
-</head>
-<body>
-    <div class="container">
-    {% block content %}
-    {% endblock content %}
-    </div>
-</body>
-</html>
+<!-- templates/_base.html -->   
+`<!DOCTYPE html>`   
+`<html>`   
+`<head>`   
+`<meta charset="utf-8">`   
+`<title>{% block title %}Our Site{% endblock title %}</title>`   
+`</head>`   
+`<body>`   
+    `<div class="container">`   
+    `{% block content %}`   
+    `{% endblock content %}`   
+    `</div>`   
+`</body>`   
+`</html>`   
 
 
 # pages/urls.py
@@ -113,31 +113,31 @@ urlpatterns = [
 ----------------------------------------------------
 
 <!-- templates/home.html -->
-{% extends "_base.html" %}
-{% block title %}Home{% endblock title %}
-{% block content %}
-<h1>This is our home page.</h1>
-{% if user.is_authenticated %}
-  <p>Hi {{ user.email }}!</p>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
-{% endif %}
-{% endblock content %}
+`{% extends "_base.html" %}`   
+`{% block title %}Home{% endblock title %}`   
+`{% block content %}`   
+`<h1>This is our home page.</h1>`   
+`{% if user.is_authenticated %}`   
+  `<p>Hi {{ user.email }}!</p>`   
+`{% else %}`   
+  `<p>You are not logged in</p>`   
+  `<a href="{% url 'login' %}">Log In</a>`   
+`{% endif %}`   
+`{% endblock content %}`   
 
 mkdir templates/registration
 
 <!-- templates/registration/login.html -->
-{% extends "_base.html" %}
-{% block title %}Log In{% endblock title %}
-{% block content %}
-<h2>Log In</h2>
-<form method="post">
-{% csrf_token %}
-{{ form.as_p }}
-<button type="submit">Log In</button>
-</form>
-{% endblock content %}
+`{% extends "_base.html" %}`   
+`{% block title %}Log In{% endblock title %}`   
+`{% block content %}`   
+`<h2>Log In</h2>`   
+`<form method="post">`   
+`{% csrf_token %}`   
+`{{ form.as_p }}`   
+`<button type="submit">Log In</button>`   
+`</form>`   
+`{% endblock content %}`   
 
 LOGIN_REDIRECT_URL = 'home'
 
@@ -162,11 +162,11 @@ First attempt for logout screen:
 Remove LOGOUT_REDIRECT_URL = 'home' and add the below:
 
 <!-- templates/registration/logged_out.html -->
-{% extends "_base.html" %}
-{% block title %}Log Out{% endblock title %}
-{% block content %}
-<h2>You are logged out</h2>
-{% endblock content %}
+`{% extends "_base.html" %}`   
+`{% block title %}Log Out{% endblock title %}`   
+`{% block content %}`   
+`<h2>You are logged out</h2>`   
+`{% endblock content %}`   
 
 While this works, it again replaces (overrides) the admin logout screen, because the template has the same name.
 contrib/admin/templates/registration/logged_out.html
