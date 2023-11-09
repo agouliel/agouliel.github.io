@@ -69,12 +69,12 @@ mkdir templates
 `<html>`   
 `<head>`   
 `<meta charset="utf-8">`   
-`<title>{% block title %}Our Site{% endblock title %}</title>`   
+`<title>{% raw %}{% block title %}{% endraw %}Our Site{% raw %}{% endblock title %}{% endraw %}</title>`   
 `</head>`   
 `<body>`   
     `<div class="container">`   
-    `{% block content %}`   
-    `{% endblock content %}`   
+    `{% raw %}{% block content %}{% endraw %}`   
+    `{% raw %}{% endblock content %}{% endraw %}`   
     `</div>`   
 `</body>`   
 `</html>`   
@@ -113,31 +113,31 @@ urlpatterns = [
 ----------------------------------------------------
 
 <!-- templates/home.html -->
-`{% extends "_base.html" %}`   
-`{% block title %}Home{% endblock title %}`   
-`{% block content %}`   
+`{% raw %}{% extends "_base.html" %}{% endraw %}`   
+`{% raw %}{% block title %}{% endraw %}Home{% raw %}{% endblock title %}{% endraw %}`   
+`{% raw %}{% block content %}{% endraw %}`   
 `<h1>This is our home page.</h1>`   
-`{% if user.is_authenticated %}`   
+`{% raw %}{% if user.is_authenticated %}{% endraw %}`   
   `<p>Hi {{ user.email }}!</p>`   
-`{% else %}`   
+`{% raw %}{% else %}{% endraw %}`   
   `<p>You are not logged in</p>`   
-  `<a href="{% url 'login' %}">Log In</a>`   
-`{% endif %}`   
-`{% endblock content %}`   
+  `<a href="{% raw %}{% url 'login' %}{% endraw %}">Log In</a>`   
+`{% raw %}{% endif %}{% endraw %}`   
+`{% raw %}{% endblock content %}{% endraw %}`   
 
 mkdir templates/registration
 
 <!-- templates/registration/login.html -->
-`{% extends "_base.html" %}`   
-`{% block title %}Log In{% endblock title %}`   
-`{% block content %}`   
+`{% raw %}{% extends "_base.html" %}{% endraw %}`   
+`{% raw %}{% block title %}{% endraw %}Log In{% raw %}{% endblock title %}{% endraw %}`   
+`{% raw %}{% block content %}{% endraw %}`   
 `<h2>Log In</h2>`   
 `<form method="post">`   
-`{% csrf_token %}`   
+`{% raw %}{% csrf_token %}{% endraw %}`   
 `{{ form.as_p }}`   
 `<button type="submit">Log In</button>`   
 `</form>`   
-`{% endblock content %}`   
+`{% raw %}{% endblock content %}{% endraw %}`   
 
 LOGIN_REDIRECT_URL = 'home'
 
@@ -147,7 +147,7 @@ Simple logout with redirect (no logout screen):
 
 <!-- templates/home.html -->
 <p>Hi {{ user.email }}!</p>
-<p><a href="{% url 'logout' %}">Log Out</a></p>
+<p><a href="{% raw %}{% url 'logout' %}{% endraw %}">Log Out</a></p>
 
 The above just redirects to the admin logout. Let's try adding the line:
 
@@ -162,11 +162,11 @@ First attempt for logout screen:
 Remove LOGOUT_REDIRECT_URL = 'home' and add the below:
 
 <!-- templates/registration/logged_out.html -->
-`{% extends "_base.html" %}`   
-`{% block title %}Log Out{% endblock title %}`   
-`{% block content %}`   
+`{% raw %}{% extends "_base.html" %}{% endraw %}`   
+`{% raw %}{% block title %}{% endraw %}Log Out{% raw %}{% endblock title %}{% endraw %}`   
+`{% raw %}{% block content %}{% endraw %}`   
 `<h2>You are logged out</h2>`   
-`{% endblock content %}`   
+`{% raw %}{% endblock content %}{% endraw %}`   
 
 While this works, it again replaces (overrides) the admin logout screen, because the template has the same name.
 contrib/admin/templates/registration/logged_out.html
