@@ -4,31 +4,22 @@ title:  "Django: How to create separate logout pages for the Admin app and your 
 date:   2023-11-09 15:21:59 +0200
 categories: django
 ---
-Create your Django project:
+As we [discussed before][discussed-before], Django is a powerful framework. We have been using it to quickly develop reliable CRUD web apps that run smoothly and flawlessly. However, apart from creating our own apps and templates, we are also guilty of giving the Admin interface to end-users. Sometimes, we even combine our custom apps and the Admin app in a single project, and users of this project might have access to both types of apps. In these cases, we faced a rather unusual problem of having to provide two different logout screens: one should be custom and the other should be the Admin’s default. Finding how to do so took some time, so if you are having the same problem, read on.
+
+First of all, let’s illustrate the issue by creating a new Django project. (The instructions in the first part of the post, have been taken from Will Vincent’s excellent book [Django for Professionals][django-for-professionals].)
 
 `mkdir logout_sample`   
 `cd logout_sample`   
-`python -m venv .venv`   
+`python3 -m venv .venv`   
 `source .venv/bin/activate`   
-`pip install django`   
-`django-admin startproject config .`   
+`pip install django` (at the time of writing, this installs version 4.2.7)   
+`django-admin startproject config .` (don't forget the dot)
 
-----------------------------------------------------   
+Now create an `accounts` app, which will be used for login/logout:   
 
-Create the `accounts` app:   
+`python3 manage.py startapp accounts`
 
-`python manage.py startapp accounts`   
-
-and add a custom user model:
-
-    # accounts/models.py
-    from django.contrib.auth.models import AbstractUser
-    from django.db import models
-
-    class CustomUser(AbstractUser):
-      pass
-
-Modify the settings to include your new app and specify the user model:
+Modify the settings to include your new app:
 
     # config/settings.py
     INSTALLED_APPS = [
@@ -38,22 +29,20 @@ Modify the settings to include your new app and specify the user model:
       # Our apps
       'accounts',
     ]
-    ...
-    AUTH_USER_MODEL = 'accounts.CustomUser'
 
-Perform the final steps:   
+Perform the final steps:
 
-`python manage.py makemigrations`   
-`python manage.py migrate`   
-`python manage.py createsuperuser`   
+`python3 manage.py migrate`   
+`python3 manage.py createsuperuser`
 
-----------------------------------------------------
+At this point, you cun run the app: `python3 manage.py runserver`   
+to check if everything works correctly.
 
-Create the `pages` app:   
+Now, let's create a `pages` app, which will contain our project's common pages:   
 
-`python manage.py startapp pages`   
+`python3 manage.py startapp pages`   
 
-and include it in the settings:
+Include this app in the settings as well:
 
     # config/settings.py
     INSTALLED_APPS = [
@@ -65,9 +54,7 @@ and include it in the settings:
         'pages',
     ]
 
-----------------------------------------------------
-
-Modify settings to enable a project-level templates folder:
+Now let's create some templates. First, modify settings to enable a project-level templates folder:
 
     TEMPLATES = [
       {
@@ -79,7 +66,7 @@ Create the templates folder:
 
 `mkdir templates`   
 
-and add your base template:
+and add your base template, from which every other template will inherit:
 
     <!-- templates/_base.html -->   
     <!DOCTYPE html>
@@ -106,7 +93,7 @@ Add the app's URLs:
         path('', HomePageView.as_view(), name='home'),
     ]
 
-Modify the views:
+Add a basic view:
 
     # pages/views.py
     from django.views.generic import TemplateView
@@ -122,18 +109,21 @@ Finally modify the project's URLs:
 
     urlpatterns = [
         path('admin/', admin.site.urls),
-        # from django.contrib.auth import views
-        # class LoginView(): template_name = "registration/login.html"
-        # class LogoutView(): template_name = "registration/logged_out.html"
-        # path("login/", views.LoginView.as_view(), name="login"),
-        # path("logout/", views.LogoutView.as_view(), name="logout"),
         path('accounts/', include('django.contrib.auth.urls')),
         path('', include('pages.urls')),
     ]
 
-----------------------------------------------------
+Note here that we include `django.contrib.auth.urls`. If you inspect the relevant Django's source code, you will see that by doing so, we are actually including the below code:
 
-Add your homepage template:
+    from django.contrib.auth import views
+    class LoginView(...): template_name = "registration/login.html"
+    class LogoutView(...): template_name = "registration/logged_out.html"
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
+
+This is important knowledge for the next steps.
+
+Let's continue by adding your homepage template:
 
     <!-- templates/home.html -->
     {% raw %}{% extends "_base.html" %}{% endraw %}
@@ -142,13 +132,14 @@ Add your homepage template:
     <h1>This is our home page.</h1>
     {% raw %}{% if user.is_authenticated %}{% endraw %}
       <p>Hi {{ user.email }}!</p>
+      <p><a href="{% raw %}{% url 'logout' %}{% endraw %}">Log Out</a></p>
     {% raw %}{% else %}{% endraw %}
       <p>You are not logged in</p>
       <a href="{% raw %}{% url 'login' %}{% endraw %}">Log In</a>
     {% raw %}{% endif %}{% endraw %}
     {% raw %}{% endblock content %}{% endraw %}
 
-Create the folder that Django expects for login and logout templates:
+Create the folder that Django expects for login and logout templates (as we saw above):
   
 `mkdir templates/registration`    
 
@@ -166,27 +157,19 @@ and add the login template there:
     </form>
     {% raw %}{% endblock content %}{% endraw %}
 
+Also add the below line in the end of settings, so you will be redirected to the homepage after login:
+
 `LOGIN_REDIRECT_URL = 'home'`   
 
-----------------------------------------------------
+Now we are getting to the meat of things. Run the app, visit [http://localhost:8000] and log in. Clicking the logout link of our homepage, we are just redirected to the Admin logout. This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
 
-Simple logout with redirect (no logout screen):
-
-    <!-- templates/home.html -->
-    <p>Hi {{ user.email }}!</p>
-    <p><a href="{% raw %}{% url 'logout' %}{% endraw %}">Log Out</a></p>
-
-The above just redirects to the admin logout. Let's try adding the line:
+Let's try adding the line:
 
 `LOGOUT_REDIRECT_URL = 'home'`   
 
-Now we have also lost the admin logout.
+While this works for our custom apps, it isn't optimal either. First of all, we might want to have a dedicated logout screen (not just be redirected to the home screen). Second and most important, now we have also lost the Admin logout! Users logging out from the Admin app, will be redirected to the homepage of our custom apps. Not good!
 
-----------------------------------------------------
-
-First attempt for logout screen:
-
-Remove `LOGOUT_REDIRECT_URL = 'home'` and add the below:
+Let's make a first attempt for a custom logout screen. Remove `LOGOUT_REDIRECT_URL = 'home'` and create the below template, as the code expects:
 
     <!-- templates/registration/logged_out.html -->
     {% raw %}{% extends "_base.html" %}{% endraw %}
@@ -195,32 +178,37 @@ Remove `LOGOUT_REDIRECT_URL = 'home'` and add the below:
     <h2>You are logged out</h2>
     {% raw %}{% endblock content %}{% endraw %}
 
-While this works, it again replaces (overrides) the admin logout screen, because the admin template has the same name: `contrib/admin/templates/registration/logged_out.html`
+This works great for our custom apps, but it replaces (overrides) the Admin logout screen, because the Admin template has the same name: `contrib/admin/templates/registration/logged_out.html`
 
-(The admin login was not replaced, because it exists in a special location:   
-`contrib/admin/templates/admin/login.html`   
-To find the above location, you can use the information here:
-https://stackoverflow.com/questions/19919547/where-can-i-find-the-source-file-of-admin-site-urls)
+(The Admin login was not replaced, because it exists in a special location: `contrib/admin/templates/admin/login.html`. This location was found by using the information in this [article].)
 
-----------------------------------------------------
+So what's the actual solution??
 
-Solution:
-
-Rename `registration/logged_out.html` to `registration/logout.html`
-and change `config/urls.py` according to the following article:
-https://stackoverflow.com/questions/59692899/using-loginview-and-logoutview-with-custom-templates
+Rename `registration/logged_out.html` to `registration/mylogout.html`
+and change `config/urls.py` according to this [article][article2].
 
     # config/urls.py
     from django.contrib.auth import views
 
     urlpatterns = [
         path('admin/', admin.site.urls),
+
         path(
           'accounts/logout/',
           views.LogoutView.as_view(
-            template_name='registration/logout.html',
+            template_name='registration/mylogout.html',
             next_page=None),
           name='logout'),
+
         path('accounts/', include('django.contrib.auth.urls')),
         path('', include('pages.urls')),
     ]
+
+Note that we specify our own logout URL first, effectively overriding the one in `django.contrib.auth.urls`.
+
+Now we have the best of both worlds. The Admin app's logout screen continues to work, and our custom apps enjoy their own, custom logout screen. Nice!
+
+[discussed-before]: http://agouliel.github.io/sharepoint/2022/11/18/how-did-we-make-transition-from-desktop-web.html
+[django-for-professionals]: https://djangoforprofessionals.com
+[article]: https://stackoverflow.com/questions/19919547/where-can-i-find-the-source-file-of-admin-site-urls
+[article2]: https://stackoverflow.com/questions/59692899/using-loginview-and-logoutview-with-custom-templates]
