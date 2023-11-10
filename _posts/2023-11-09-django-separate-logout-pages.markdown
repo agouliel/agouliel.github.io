@@ -152,7 +152,7 @@ and add the login template there:
     <h2>Log In</h2>
     <form method="post">
     {% raw %}{% csrf_token %}{% endraw %}
-    {{ form.as_p }}
+    {% raw %}{{ form.as_p }}{% endraw %}
     <button type="submit">Log In</button>
     </form>
     {% raw %}{% endblock content %}{% endraw %}
@@ -161,7 +161,11 @@ Also add the below line in the end of settings, so you will be redirected to the
 
 `LOGIN_REDIRECT_URL = 'home'`   
 
-Now we are getting to the meat of things. Run the app, visit [http://localhost:8000] and log in. Clicking the logout link of our homepage, we are just redirected to the Admin logout. This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
+Now we are getting to the meat of things. Run the app, visit [http://localhost:8000][localhost] and log in:
+
+![Home screen](/agouliel.github.io/assets/1.png)
+
+Clicking the logout link of our homepage, we are just redirected to the Admin logout. This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
 
 Let's try adding the line:
 
@@ -210,5 +214,6 @@ Now we have the best of both worlds. The Admin app's logout screen continues to 
 
 [discussed-before]: http://agouliel.github.io/sharepoint/2022/11/18/how-did-we-make-transition-from-desktop-web.html
 [django-for-professionals]: https://djangoforprofessionals.com
+[localhost]: http://localhost:8000
 [article]: https://stackoverflow.com/questions/19919547/where-can-i-find-the-source-file-of-admin-site-urls
 [article2]: https://stackoverflow.com/questions/59692899/using-loginview-and-logoutview-with-custom-templates]
