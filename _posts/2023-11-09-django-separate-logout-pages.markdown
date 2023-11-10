@@ -190,7 +190,7 @@ Let's make a first attempt for a custom logout page. Remove `LOGOUT_REDIRECT_URL
     <h2>You are logged out</h2>
     {% raw %}{% endblock content %}{% endraw %}
 
-This works great for our custom apps, but it replaces (overrides) the Admin logout screen, because the Admin template has the same name: `contrib/admin/templates/registration/logged_out.html`
+This works great for our custom apps, but it replaces (overrides) the Admin logout page, because the Admin template has the same name: `contrib/admin/templates/registration/logged_out.html`
 
 (The Admin login was not replaced, because it exists in a special location: `contrib/admin/templates/admin/login.html`. This location was found by using the information in this [article].)
 
@@ -218,7 +218,7 @@ and change `config/urls.py` according to this [article][article2]:
 
 Note that we specify our own logout URL first, effectively overriding the one in `django.contrib.auth.urls`.
 
-Now we have the best of both worlds. The Admin app's logout screen continues to work, and our custom apps enjoy their own, dedicated logout screen. Nice!
+Now we have the best of both worlds. The Admin app's logout page continues to work, and our custom apps enjoy their own, dedicated logout page. Nice!
 
 [discussed-before]: http://agouliel.github.io/sharepoint/2022/11/18/how-did-we-make-transition-from-desktop-web.html
 [django-for-professionals]: https://djangoforprofessionals.com
