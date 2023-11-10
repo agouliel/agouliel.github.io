@@ -4,7 +4,7 @@ title:  "Django: How to create separate logout pages for the Admin app and your 
 date:   2023-11-09 15:21:59 +0200
 categories: django
 ---
-As we [discussed before][discussed-before], Django is a powerful framework. We have been using it to quickly develop reliable CRUD web apps that run smoothly and flawlessly. However, apart from creating our own apps and templates, we are also guilty of giving the Admin interface to end-users. Sometimes, we even combine our custom apps and the Admin app in a single project, and users of this project might have access to both types of apps. In these cases, we faced a rather unusual problem of having to provide two different logout pages: one should be custom and the other should be the Admin’s default. Finding how to do so took some time, so if you are having the same problem, read on.
+As we [discussed before][discussed-before], Django is a powerful framework. We have been using it to quickly develop reliable CRUD web apps that run smoothly and flawlessly. However, apart from creating our own apps and templates, we are also guilty of giving the Admin interface to end-users. Sometimes, we even combine our custom apps and the Admin app in a single project, and users of this project might have access to both types of apps. In these cases, we faced a rather unusual problem of having to provide two different logout pages: one should be custom and the other should be the Admin’s default. Finding how to do it took some time and experimentation, so if you are having the same problem, read on.
 
 First of all, let’s illustrate the issue by creating a new Django project. (The instructions in the first part of the post, have been taken from Will Vincent’s excellent book [Django for Professionals][django-for-professionals].)
 
@@ -131,7 +131,7 @@ Finally we can add our homepage template:
     {% raw %}{% block content %}{% endraw %}
     <h1>This is our home page.</h1>
     {% raw %}{% if user.is_authenticated %}{% endraw %}
-      <p>Hi {{ user.email }}!</p>
+      <p>Hi {% raw %}{{ user.email }}{% endraw %}!</p>
       <p><a href="{% raw %}{% url 'logout' %}{% endraw %}">Log Out</a></p>
     {% raw %}{% else %}{% endraw %}
       <p>You are not logged in</p>
@@ -157,7 +157,7 @@ and add the login template there:
     </form>
     {% raw %}{% endblock content %}{% endraw %}
 
-Also add the below line in the end of settings, so you will be redirected to the homepage after login:
+Also add the below line at the end of settings, so you will be redirected to the homepage after login:
 
 `LOGIN_REDIRECT_URL = 'home'`   
 
@@ -175,7 +175,7 @@ Clicking the logout link of our homepage, we are just redirected to the Admin lo
 
 This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout page.
 
-Let's try adding the line:
+Let's try adding the following line at the end of settings:
 
 `LOGOUT_REDIRECT_URL = 'home'`   
 
