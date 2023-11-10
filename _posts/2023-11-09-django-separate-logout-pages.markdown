@@ -163,9 +163,15 @@ Also add the below line in the end of settings, so you will be redirected to the
 
 Now we are getting to the meat of things. Run the app, visit [http://localhost:8000][localhost] and log in:
 
-![Home screen](/agouliel.github.io/assets/1.png)
+![Home screen](/agouliel.github.io/docs/assets/1.png)
+![Log in](/agouliel.github.io/docs/assets/2.png)
+![Logged in](/agouliel.github.io/docs/assets/3.png)
 
-Clicking the logout link of our homepage, we are just redirected to the Admin logout. This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
+Clicking the logout link of our homepage, we are just redirected to the Admin logout:
+
+![Admin logout](/agouliel.github.io/docs/assets/4.png)
+
+This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
 
 Let's try adding the line:
 
