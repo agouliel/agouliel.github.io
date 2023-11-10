@@ -4,7 +4,7 @@ title:  "Django: How to create separate logout pages for the Admin app and your 
 date:   2023-11-09 15:21:59 +0200
 categories: django
 ---
-As we [discussed before][discussed-before], Django is a powerful framework. We have been using it to quickly develop reliable CRUD web apps that run smoothly and flawlessly. However, apart from creating our own apps and templates, we are also guilty of giving the Admin interface to end-users. Sometimes, we even combine our custom apps and the Admin app in a single project, and users of this project might have access to both types of apps. In these cases, we faced a rather unusual problem of having to provide two different logout screens: one should be custom and the other should be the Admin’s default. Finding how to do so took some time, so if you are having the same problem, read on.
+As we [discussed before][discussed-before], Django is a powerful framework. We have been using it to quickly develop reliable CRUD web apps that run smoothly and flawlessly. However, apart from creating our own apps and templates, we are also guilty of giving the Admin interface to end-users. Sometimes, we even combine our custom apps and the Admin app in a single project, and users of this project might have access to both types of apps. In these cases, we faced a rather unusual problem of having to provide two different logout pages: one should be custom and the other should be the Admin’s default. Finding how to do so took some time, so if you are having the same problem, read on.
 
 First of all, let’s illustrate the issue by creating a new Django project. (The instructions in the first part of the post, have been taken from Will Vincent’s excellent book [Django for Professionals][django-for-professionals].)
 
@@ -35,7 +35,7 @@ Perform the final steps:
 `python3 manage.py migrate`   
 `python3 manage.py createsuperuser`
 
-At this point, you cun run the app: `python3 manage.py runserver`   
+At this point, you cun run the project: `python3 manage.py runserver`   
 to check if everything works correctly.
 
 Now, let's create a `pages` app, which will contain our project's common pages:   
@@ -83,7 +83,7 @@ and add your base template, from which every other template will inherit:
     </body>
     </html>
 
-Add the app's URLs:
+Now we should create the homepage template, but first add the app's URLs:
 
     # pages/urls.py
     from django.urls import path
@@ -101,7 +101,7 @@ Add a basic view:
     class HomePageView(TemplateView):
       template_name = 'home.html'
 
-Finally modify the project's URLs:
+Modify the project's URLs:
 
     # config/urls.py
     from django.contrib import admin
@@ -123,7 +123,7 @@ Note here that we include `django.contrib.auth.urls`. If you inspect the relevan
 
 This is important knowledge for the next steps.
 
-Let's continue by adding your homepage template:
+Finally we can add our homepage template:
 
     <!-- templates/home.html -->
     {% raw %}{% extends "_base.html" %}{% endraw %}
@@ -139,7 +139,7 @@ Let's continue by adding your homepage template:
     {% raw %}{% endif %}{% endraw %}
     {% raw %}{% endblock content %}{% endraw %}
 
-Create the folder that Django expects for login and logout templates (as we saw above):
+Now we need our login template. Create the folder that Django expects for it (as we saw above):
   
 `mkdir templates/registration`    
 
@@ -163,23 +163,25 @@ Also add the below line in the end of settings, so you will be redirected to the
 
 Now we are getting to the meat of things. Run the app, visit [http://localhost:8000][localhost] and log in:
 
-![Home screen](/docs/assets/1.png){: width="75%"}
-![Log in](/docs/assets/2.png){: width="75%"}
-![Logged in](/docs/assets/3.png){: width="75%"}
+![Home page](/docs/assets/1.png){: width="70%"}
 
-Clicking the logout link of our homepage, we are just redirected to the Admin logout:
+![Log in](/docs/assets/2.png){: width="70%"}
 
-![Admin logout](/docs/assets/4.png){: width="75%"}
+![Logged in](/docs/assets/3.png){: width="70%"}
 
-This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
+Clicking the logout link of our homepage, we are just redirected to the Admin logout page:
+
+![Admin logout](/docs/assets/4.png){: width="70%"}
+
+This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout page.
 
 Let's try adding the line:
 
 `LOGOUT_REDIRECT_URL = 'home'`   
 
-While this works for our custom apps, it isn't optimal either. First of all, we might want to have a dedicated logout screen (not just be redirected to the home screen). Second and most important, now we have also lost the Admin logout! Users logging out from the Admin app, will be redirected to the homepage of our custom apps. Not good!
+This will just redirect a logged out user to the home page. While this works for our custom apps, it isn't optimal either. First of all, we might want to have a dedicated logout page (not just be redirected to the home page). Second and most important, now we have also lost the Admin logout! Users logging out from the Admin app, will be redirected to the homepage of our custom apps. Not good!
 
-Let's make a first attempt for a custom logout screen. Remove `LOGOUT_REDIRECT_URL = 'home'` and create the below template, as the code expects:
+Let's make a first attempt for a custom logout page. Remove `LOGOUT_REDIRECT_URL = 'home'` and create the below template, as the code expects:
 
     <!-- templates/registration/logged_out.html -->
     {% raw %}{% extends "_base.html" %}{% endraw %}
@@ -195,7 +197,7 @@ This works great for our custom apps, but it replaces (overrides) the Admin logo
 So what's the actual solution??
 
 Rename `registration/logged_out.html` to `registration/mylogout.html`
-and change `config/urls.py` according to this [article][article2].
+and change `config/urls.py` according to this [article][article2]:
 
     # config/urls.py
     from django.contrib.auth import views
@@ -216,7 +218,7 @@ and change `config/urls.py` according to this [article][article2].
 
 Note that we specify our own logout URL first, effectively overriding the one in `django.contrib.auth.urls`.
 
-Now we have the best of both worlds. The Admin app's logout screen continues to work, and our custom apps enjoy their own, custom logout screen. Nice!
+Now we have the best of both worlds. The Admin app's logout screen continues to work, and our custom apps enjoy their own, dedicated logout screen. Nice!
 
 [discussed-before]: http://agouliel.github.io/sharepoint/2022/11/18/how-did-we-make-transition-from-desktop-web.html
 [django-for-professionals]: https://djangoforprofessionals.com
