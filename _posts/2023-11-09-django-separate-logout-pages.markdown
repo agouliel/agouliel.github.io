@@ -163,13 +163,13 @@ Also add the below line in the end of settings, so you will be redirected to the
 
 Now we are getting to the meat of things. Run the app, visit [http://localhost:8000][localhost] and log in:
 
-![Home screen](/docs/assets/1.png){: width="50%"}
-![Log in](/docs/assets/2.png){: width="50%"}
-![Logged in](/docs/assets/3.png){: width="50%"}
+![Home screen](/docs/assets/1.png){: width="75%"}
+![Log in](/docs/assets/2.png){: width="75%"}
+![Logged in](/docs/assets/3.png){: width="75%"}
 
 Clicking the logout link of our homepage, we are just redirected to the Admin logout:
 
-![Admin logout](/docs/assets/4.png){: width="50%"}
+![Admin logout](/docs/assets/4.png){: width="75%"}
 
 This isn't optimal, because a user logging out from a custom app will see the different look and feel of the Admin logout screen.
 
