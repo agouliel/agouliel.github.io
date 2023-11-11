@@ -14,24 +14,6 @@ First of all, let’s illustrate the issue by creating a new Django project. (Th
 `source .venv/bin/activate`   
 `pip install django` #(at the time of writing, this installs version 4.2.7)   
 `django-admin startproject config .` #(don't forget the dot)
-
-Now create an `accounts` app, which will be used for login/logout:   
-
-`python3 manage.py startapp accounts`
-
-Modify the settings to include your new app:
-
-    # config/settings.py
-    INSTALLED_APPS = [
-      ...
-      'django.contrib.staticfiles',
-
-      # Our apps
-      'accounts',
-    ]
-
-Perform the final steps:
-
 `python3 manage.py migrate`   
 `python3 manage.py createsuperuser`
 
@@ -42,7 +24,7 @@ Now, let's create a `pages` app, which will contain our project's common pages:
 
 `python3 manage.py startapp pages`   
 
-Include this app in the settings as well:
+Include this app in the settings:
 
     # config/settings.py
     INSTALLED_APPS = [
@@ -50,7 +32,6 @@ Include this app in the settings as well:
         'django.contrib.staticfiles',
 
         # Our apps
-        'accounts',
         'pages',
     ]
 
