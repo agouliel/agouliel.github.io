@@ -12,8 +12,8 @@ First of all, let’s illustrate the issue by creating a new Django project. (Th
 `cd logout_sample`   
 `python3 -m venv .venv`   
 `source .venv/bin/activate`   
-`pip install django` (at the time of writing, this installs version 4.2.7)   
-`django-admin startproject config .` (don't forget the dot)
+`pip install django` #(at the time of writing, this installs version 4.2.7)   
+`django-admin startproject config .` #(don't forget the dot)
 
 Now create an `accounts` app, which will be used for login/logout:   
 
@@ -190,14 +190,15 @@ Let's make a first attempt for a custom logout page. Remove `LOGOUT_REDIRECT_URL
     <h2>You are logged out</h2>
     {% raw %}{% endblock content %}{% endraw %}
 
-This works great for our custom apps, but it replaces (overrides) the Admin logout page, because the Admin template has the same name: `contrib/admin/templates/registration/logged_out.html`
+This works great for our custom apps, but it replaces (overrides) the Admin logout page, because the Admin template has the same name: `contrib/admin/templates/registration/logged_out.html`   
+This means that we have lost the Admin logout again, and now we have the reverse problem: a user logging out from the Admin app will see the different look and feel of our custom logout page.
 
 (The Admin login was not replaced, because it exists in a special location: `contrib/admin/templates/admin/login.html`. This location was found by using the information in this [article].)
 
 So what's the actual solution??
 
 Rename `registration/logged_out.html` to `registration/mylogout.html`
-and change `config/urls.py` according to this [article][article2]:
+and change `config/urls.py` according to this [article][article2] as follows:
 
     # config/urls.py
     from django.contrib.auth import views
@@ -216,7 +217,7 @@ and change `config/urls.py` according to this [article][article2]:
         path('', include('pages.urls')),
     ]
 
-Note that we specify our own logout URL first, effectively overriding the one in `django.contrib.auth.urls`.
+Note that we specified our own logout URL first, effectively overriding the one in `django.contrib.auth.urls`.
 
 Now we have the best of both worlds. The Admin app's logout page continues to work, and our custom apps enjoy their own, dedicated logout page. Nice!
 
