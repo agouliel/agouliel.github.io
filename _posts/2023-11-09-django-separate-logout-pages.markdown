@@ -13,7 +13,7 @@ First of all, let’s illustrate the issue by creating a new Django project. (Th
 `python3 -m venv .venv`   
 `source .venv/bin/activate`   
 `pip install django` #(at the time of writing, this installs version 4.2.7)   
-`django-admin startproject config .` #(don't forget the dot)
+`django-admin startproject config .` #(don't forget the dot)   
 `python3 manage.py migrate`   
 `python3 manage.py createsuperuser`
 
